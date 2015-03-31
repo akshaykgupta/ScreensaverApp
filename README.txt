@@ -2,7 +2,7 @@
 Authors: Akshay Kumar Gupta	Barun Patra	J Shikhar Murty
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 INTRODUCTION:
-The purpose of this assignment is to create an interactive screen saver, which simulates collisions in 2D and 3D, allowing users to increase/decrease speed, pause/resume and enable/disable effects gravity, using one to one thread communication.
+The purpose of this application is to create an interactive screen saver, which simulates collisions in 2D and 3D, allowing users to increase/decrease speed, pause/resume and enable/disable effects gravity, using one to one thread communication.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 COMPILATION AND EXECUTION: 
 Compiling the Documentation:
