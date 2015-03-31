@@ -1,0 +1,69 @@
+\documentclass[]{article}
+\newcommand{\ty}[1]{\texttt{#1}}
+\begin{document}
+
+\title{COP 290 - Assignment 1\\Changes and added functionalities}
+\author{Akshay Kumar Gupta\\ 2013CS50275 \and  Barun Patra\\{2013CS10773} \and J. Shikhar Murty\\{2013EE10462}}
+\date{}
+\maketitle
+\begin{flushleft}
+\begin{abstract}
+\noindent The document enumerates and expands on the differences and/or additions to the final project were previously not mentioned in the design document.
+\end{abstract}
+\end{flushleft} 
+\section{One-to-One thread Communication Model }
+Communication between threads has been made one-to-one. Each thread has access to the data of the \texttt{Ball(s)} it controls and the \texttt{MessageQueue} of the other threads. The \texttt{MessageQueue} of a thread contains the position of all other balls, which is processed by the thread, once the \texttt{MessageQueue} is full. In this way, a thread cannot change the data members of any \texttt{Ball} that it does not control. This is the model of communication adapted. \\
+The \texttt{MessageQueue} class has its own \texttt{Mutex} and \texttt{Conditional variable} that allows safe, race free insertions and deletions.  
+\section{GUI}
+\begin{enumerate}
+\item Buttons 
+	\begin{flushleft}	
+		All \texttt{Buttons} have been created manually. The \texttt{Button} Class defines the properties of a \texttt{Button}. It has the following members:
+		\begin{itemize}
+			\item \ty{xTopLeft} -- The x coordinate of the top left corner of the button.
+			\item \ty{yTopLeft} -- The y coordinate of the top left corner of the button.
+\item \ty{width} -- The width of the Button
+\item \ty{height} --The height of the Button
+\item \ty{text} -- The Label on the Button
+\item \ty{textLength} --Length of the text, used to centre the font.
+\item \ty{click\_color} --The color of button when clicked.
+\item \ty{back\_color} -- The general background color of the Button.
+\item \ty{pressed} -- Whether the Button is pressed or not. 
+\end{itemize}
+The objects of the \texttt{Button} are increaseSpeed, decreaseSpeed, Enable/Disable Gravity and Pause/Play. They are discussed below:
+\begin{itemize}
+\item \ty{increaseSpeed} -- Increases the speed of the selected \texttt{Ball}, upto a defined \texttt{Max Velocity}
+\item \ty{decreaseSpeed} -- Decreases the speed of the selected \texttt{Ball}
+\item \ty{Enable/Disable Gravity} -- Toggles between enabling the effects of gravity inside the \texttt{Box}. 
+\item \ty{Pause/Play} -- Used to pause the simulation, so as to allow easier selection.
+\end{itemize}
+\end{flushleft}
+\item {KeyBoard Controls}
+\begin{flushleft}
+The following is a list of the \ty{KeyBoard functions} available: 
+\begin{itemize}
+\item \ty{Increase/Decrease Speed}:  \ty{w} and \ty{s} allow the user to increase and decrease the speed of a selected \texttt{Ball} respectively.
+\item \ty{Toggle Selection}: \ty{a} and \ty{d} allow the user to toggle between selected \texttt{Balls}. 
+\item \ty{Enable/Disable Gravity}: \ty{g} allows the user to enable/disable the effects of gravity within the \texttt{Box}.
+\item \ty{Pause/Play}: \ty{Space\_Bar} allows the user to pause the simulation, and resume the same, as per his convenience. 
+\item \ty{View Selection}: The \ty{Up}, \ty{Down}, \ty{Left} and \ty{Right} arrow keys allow the user to change the view of the camera, allowing the user to view the \texttt{Box}, and the \texttt{Balls} from different angles,while facilitating the selection of \texttt{Balls}.
+\item \ty{3D-2D-3D}: The \ty{2} key is used to toggle between 2D and 3D modes. However, in the 2D mode, the rotation buttons are disabled. 
+\end{itemize}
+\end{flushleft}
+\item Mouse Controls
+\begin{flushleft}
+\begin{itemize}
+\item \ty{Selection}: Clicking on a \texttt{Ball} would select the \texttt{Ball}. In case a ball to be selected is hidden behind another, rotating the \texttt{box} and then selecting the \texttt{Ball} would achieve the same.
+\end{itemize}
+\end{flushleft}
+\end{enumerate}
+\section{Additional Features}
+\begin{enumerate}
+\item \ty{Single \texttt{Thread} controlling multiple \texttt{Balls}}:  The number of \texttt{Balls} and the number of \texttt{Threads} are command line inputs. The program functions smoothly for cases wherein num\_Balls $\geq$ num\_Threads. Given num\_Balls = m and num\_threads = n (m $\geq$ n), each thread controls $\lfloor \frac{m}{n} \rfloor$ \texttt{Balls}.
+\item \ty{Realistic Collisions}: The \emph{Coefficient of Restitution C$_{\emph{R}}$} is a command line argument, and by default is set to 1.0 (Elastic collision). Any other value of \emph{C$_{\emph{R}}$} ($ 0.0 \leq \emph{C$_{\emph{R}}$} \leq 1.0$) adjusts the \texttt{updateBalls()} (mentioned in the Design Document)  to handle the collisions appropriately, simulation collisions somewhat similar to what happens in real life. 
+\end{enumerate}
+\section{Debugging}
+\begin{flushleft} 
+All debugging has been done on the LLDB debugger on Xcode version 6.0.1
+\end{flushleft}
+\end{document}

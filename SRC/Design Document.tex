@@ -1,0 +1,103 @@
+\documentclass[]{article}
+\newcommand{\ty}[1]{\texttt{#1}}
+\begin{document}
+
+\title{COP 290 - Assignment 1\\Screensaver App}
+\author{Akshay Kumar Gupta\\ 2013CS50275 \and  Barun Patra\\{2013CS10773} \and J. Shikhar Murty\\{2013EE10462}}
+\date{}
+\maketitle
+\section{Overall Design}
+A modular design pattern is followed with two main classes named \texttt{Ball} and \texttt{Box}. \texttt{Ball} defines the properties of a ball while \texttt{Box} defines the area in which the balls are confined. The number of balls $n$ is accepted as user input and $n$ balls of different sizes moving at different velocities are simulated in a box. The user has the option to change the speeds of individual balls. A multi-threaded paradigm is used in which one thread is used to control one ball. The $n$ threads communicate with each other to correctly handle ball collision. Barrier synchronization has been used to used to synchronize the threads but a switch to one-to-one communication has been planned.
+\section{Components}
+\begin{enumerate}
+\item Class \texttt{Ball}
+\begin{flushleft}
+The \texttt{Ball} Class defines the properties of the ball. It has the following members:
+\begin{itemize}
+\item \texttt{Centre} -- This is a \texttt{Vector} of the centre coordinates of the ball. It defines the coordinates of the centre of the ball. [ \texttt{Vector} is a user-defined class for a mathematical 3-dimensional vector. ]
+\item \ty{Velocity} -- This is a \ty{Vector} which defines the velocity of the ball.
+\item \ty{Radius} -- The radius of the ball.
+\item \ty{Mass} -- Mass of the ball which is proportional to the radius of the ball.
+\item \ty{Red, Green, Blue} -- Data members which together define the color of the ball.
+\item \ty{initBall()} -- Member function which initializes the centre, velocity, radius and color of the ball uniformly at random in a specified range.
+\end{itemize}
+\end{flushleft}
+\item Class \ty{Box}
+\begin{flushleft}
+The \ty{Box} class defines the properties of the box in which balls are confined. It has the following members:
+\begin{itemize}
+\item \ty{Width} - The width of the box.
+\item \ty{Height} - The height of the box.
+\item \ty{Depth} - The depth of the box.
+\end{itemize}
+\end{flushleft}
+\item GUI
+\begin{flushleft}
+The GUI is handled by the following functions:
+\begin{itemize}
+\item \ty{display()} -- It is responsible for drawing the balls and the box.
+\item \ty{mouseInput()} -- It detects mouse input from the user and acts accordingly. Mouse input is used to select a particular ball and to press a button to increase/decrease its speed (More in the \emph{Variable Ball Speed} section).
+\item \ty{keyboardInput()} -- It detects keyboard input from the user and acts accordingly. It can be used as an alternative to the GUI button to increase/decrease ball speed (More in the \emph{Variable Ball Speed} section).
+\end{itemize}
+\end{flushleft}
+\item Physics
+\begin{flushleft}
+The main components where physics is handled is:
+\begin{itemize}
+\item ballCollisionHandler(): This function accepts two Balls, say ball 1 and ball 2, which have collided and updates their velocities. Velocities are computed very efficiently because costly trigonometric computations are not carried out. This is because the position and velocity of a ball are objects of a class called \ty{Vector}. This class provides functions for a mathematical vector namely \ty{add}, \ty{subtract}, \ty{modulus}, \ty{dotProduct}, \ty{crossProduct}, \ty{normalize} and \ty{scale}. Using these functions, the new velocities are computed using the equations:
+\begin{displaymath}
+\hat{n} = \frac{\vec{r_{1}} - \vec{r_{2}}}{||\vec{r_{1}} - \vec{r_{2}}||}
+\end{displaymath}
+\begin{displaymath}
+w_1 = \frac{m_2e(u_2 - u_1) + m_1u_1 + m_2u_2} {m_1+m_2}
+\end{displaymath}
+\begin{displaymath}
+w_2 = \frac{m_1e(u_1 - u_2) + m_1u_1 + m_2u_2} {m_1+m_2}
+\end{displaymath}
+\begin{displaymath}
+\vec{v_{1}} = \vec{u_{1}} - (\vec{u_{1}}\cdot\hat{n})\hat{n} + w_1\hat{n}
+\end{displaymath}
+\begin{displaymath}
+\vec{v_{2}} = \vec{u_{2}} - (\vec{u_{2}}\cdot\hat{n})\hat{n} + w_2\hat{n}
+\end{displaymath}
+Moreover, the collision handler also has support for inelastic collisions. So the user can pass an extra command line argument specifying the coefficient of restitution $e$ for collisions.
+\end{itemize}
+Computing the new velocity in the event of a collision of a ball with the wall is taken care of in the relevant thread function itself. 
+\end{flushleft}
+\end{enumerate}
+\section{Inter-Component Interaction}
+Sub-component interaction is carried out in the following scenarios:
+\begin{itemize}
+\item Ball to Wall collision: Collision of a wall with a ball is detected when:
+\begin{displaymath}
+|Pos_{wall} - Pos_{centre}| \leq radius
+\end{displaymath}
+The appropriate changes are made to the ball velocity according to the elasticity (=1 by default).
+\item Ball to Ball Collision: Collision of a ball is detected when
+\begin{displaymath}
+||\vec{r_1} - \vec{r_2}|| \leq radius_1 + radius_2
+\end{displaymath}
+where $\vec{r_1}$ and $\vec{r_2}$ denote the centers of the two balls.\\
+The new velocities are computed according to the equations mentioned above.
+\item Physics and GUI: Every time the new positions of the balls are calculated the \ty{display()} function is called which draws the balls.
+\end{itemize}
+\section{Multi-Threading}
+There are $n$ threads for $n$ balls, wherein each thread is responsible for controlling a single ball. Currently barrier synchronization is used to synchronize the threads. Firstly, the ball positions are updated. Then wall collisions are detected and updated. Then ball collisions are detected and handled inside a mutex lock to prevent race conditions.
+\section{Variable Ball Speeds}
+The user can select a ball with a left mouse click which will make the ball white in color. The ball's speed can then be increased or decreased between a pre-defined maximum or minimum by pressing the relevant button or through keyboard input, whichever is preferred by the user. The ball's velocity which is maintained in the \ty{Ball} object will be updated accordingly. The model for movement and collisions ensures that the physics does not break. When the next ball is selected the previously selected ball will return to its original color and the new ball will become white.
+\section{Unit Testing}
+Extensive unit testing will be carried out on the following components:
+\begin{itemize}
+\item Physics: We will pass different ball positions and velocities to the \begin{itemize} \item Wall collision function \item Ball collision function \end{itemize} and check the new ball positions and velocities using assert statements. We will check all the different possible corner cases that may arise. We will check that the increase and decrease in ball speeds occur correctly.
+\item GUI: We will check that the balls are created with random positions, speed and color. We will visually check that balls and box are rendered correctly.
+\item Threads: We will check that all updates to variables which can potentially be accessed  by multiple threads are done inside a mutex lock. We will also check that cases where threads/mutexes fail to initialize are handled correctly.
+\end{itemize}
+\section{Planned Improvements}
+We intend to add the following features:
+\begin{itemize}
+\item Slider for varying ball speed: A slider that will move up and down to show the speed of the selected ball.
+\item Quad Tree: Currently our model is $\mathcal{O}(n^2)$ for collision detection and handling. We plan to implement a quad tree to track ball positions so that unnecessary checks for collision do not take place. This can potentially improve the running time by a large amount.
+\item $M$ threads for $N$ balls: We plan to add support for controlling $n$ balls using $m$ threads where $m < n$.
+\item One-to-one thread communication: Currently we are using barrier synchronization model for thread synchronization. We intend to switch to a one-to-one thread communication model as suggested.
+\end{itemize}
+\end{document}
